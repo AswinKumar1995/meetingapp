@@ -1,0 +1,310 @@
+
+  <app-navbar></app-navbar>
+  <mat-toolbar >
+    <span style="color: red;">  <mat-icon>edit</mat-icon> Edit Meeting Planner of {{userName}}</span>
+  </mat-toolbar>
+  <br>
+  <div class = "noMargin">
+    <div class="container-fluid">
+    <!-- Calender header -->
+        <div class="row">
+            <div class="col-md-6">
+              <div class="row text-center">
+                <div class="col-md-4">
+                  <div class="btn-group">
+                    <div class="btn btn-primary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+                      (viewDateChange)="closeOpenMonthViewDay()">
+                      Previous
+                    </div>
+                    <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
+                      Today
+                    </div>
+                    <div class="btn btn-primary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+                      (viewDateChange)="closeOpenMonthViewDay()">
+                      Next
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h3>
+                </div>
+                <div class="col-md-4">
+                  <div class="btn-group">
+                    <div class="btn btn-primary" (click)="setView(CalendarView.Month)" [class.active]="view === CalendarView.Month">
+                      Month
+                    </div>
+                    <div class="btn btn-primary" (click)="setView(CalendarView.Week)" [class.active]="view === CalendarView.Week">
+                      Week
+                    </div>
+                    <div class="btn btn-primary" (click)="setView(CalendarView.Day)" [class.active]="view === CalendarView.Day">
+                      Day
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <br />
+              <div [ngSwitch]="view">
+                <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
+                  [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
+                  (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)"
+                  id="monthView">
+                </mwl-calendar-month-view>
+                <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events"
+                  [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)"
+                  (eventTimesChanged)="eventTimesChanged($event)" (dayHeaderClicked)="weekHeaderClicked($event.day.date)">
+                </mwl-calendar-week-view>
+                <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
+                  (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)">
+                </mwl-calendar-day-view>
+              </div>
+
+              <!-- Everything you see below is just for the demo, you don't need to include it in your app -->
+            </div>  
+        
+
+            <div class="col-md-6">
+              <!-- editable meetings -->
+              <div>
+                <h3>
+                  Edit events
+                  <button class="btn btn-primary pull-right" (click)="addEvent()">
+                    Add new
+                  </button>
+                  <div class="clearfix"></div>
+                </h3>
+                <div class="table-wrapper-scroll-y my-custom-scrollbar ">
+                  <div class="table-responsive ">
+                    <table class="table table-bordered ">
+                      <thead >
+                        <tr class="d-flex" >
+                          <th class="col-3" >Purpose</th>
+                          <th class="col-3" >Primary color</th>
+                          <th class="col-3" >Secondary color</th>
+                          <th class="col-4"  >Starts at</th>
+                          <th class="col-4" >Ends at</th>
+                          <th class="col-4" >Location</th>
+                          <th class="col-4" >Created By</th>
+                          <th class="col-3"  >Save</th>
+                          <th class="col-3"  >Remove</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let event of events" class="d-flex">
+                          <td class="col-3" >
+                            <input type="text" class="form-control" [(ngModel)]="event.title" (keyup)="refresh.next()" />
+                          </td>
+                          <td class="col-3" > 
+                            <input type="color" [(ngModel)]="event.color.primary" (change)="refresh.next()" />
+                          </td>
+                          <td class="col-3" >
+                            <input type="color" [(ngModel)]="event.color.secondary" (change)="refresh.next()" />
+                          </td>
+                          <td class="col-4" >
+                            <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="event.start"
+                              (ngModelChange)="refresh.next()" [altInput]="true" [convertModelValue]="true" [enableTime]="true"
+                              dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
+                          </td>
+                          <td class="col-4" >
+                            <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="event.end"
+                              (ngModelChange)="refresh.next()" [altInput]="true" [convertModelValue]="true" [enableTime]="true"
+                              dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
+                          </td>
+                          <td   class="col-4">
+
+                            <mat-form-field *ngIf="!event.meetingId">
+                              <mat-label>Meeting Location</mat-label>
+                              <mat-select name = 'location' [(ngModel)]="meetingLocation">
+                                <mat-option *ngFor="let location of meetingLocationList" [value]="location">
+                                  {{location}}
+                                </mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                            <mat-form-field *ngIf="event.meetingId">
+                              <mat-label>{{event.location}}</mat-label>
+                              <mat-select name = 'location' [(ngModel)]="event.location">
+                                <mat-option *ngFor="let location of meetingLocationList" [value]="location">
+                                  {{location}}
+                                </mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                        
+                         
+                          </td>
+                          <td *ngIf="event.adminName" class="col-4">
+                            <span>{{event.adminName}}</span>
+                          </td>
+                          <td *ngIf="!event.adminName" class="col-4">
+                            <span>{{adminName}}</span>
+                          </td>
+                          <td *ngIf="!event.meetingId" class="col-3" id = "createButton">
+                            <button class="btn btn-success" (click)="createEvent(event)">
+                              Create
+                            </button>
+                          </td>
+                          <td *ngIf="event.meetingId" class="col-3" id = "saveButton">
+                            <button class="btn btn-success" (click)="saveEvent(event)">
+                              Save
+                            </button>
+                          </td>
+                          <td class="col-3" > 
+                            <button [disabled]="!event.meetingId" class="btn btn-danger" (click)="deleteEvent(event)">
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <ng-template #modalContent let-close="close">
+                  <div *ngIf=" modalData?.action === 'Clicked' ">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Meeting Details</h5>
+                      <button type="button" class="close" (click)="close()">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div>
+                        Purpose:
+                        <pre>{{ modalData?.event.title }}</pre>
+                      </div>
+                      <div>
+                        Meeting starts at:
+                        <pre>{{ modalData?.event.start | date : 'medium'}}
+                            
+                          </pre>
+                      </div>
+                      <div>
+                        Meeting ends at:
+                        <pre>{{ modalData?.event.end | date : 'medium'}}
+                                
+                              </pre>
+                      </div>
+                      <div>
+                        Location:
+                        <pre>{{ modalData?.event.location}}</pre>
+                      </div>
+                      <div>
+                        Created By:
+                        <pre>{{ modalData?.event.adminName}}</pre>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-outline-secondary" (click)="close()">
+                        OK
+                      </button>
+                    </div>
+                  </div>
+
+
+                  <div *ngIf=" modalData?.action === 'Edited' ">
+                    <div class="modal-header">
+                      <h5 class="modal-title"> Edit Meeting Details</h5>
+                      <button type="button" class="close" (click)="updateCalendar();close()">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div >
+                        Edit Meeting Details : 
+                      </div>
+                      <div>
+                        Purpose:
+                        <pre>
+                          <input
+                          type="text"
+                          class="form-control"
+                          [(ngModel)]="modalData?.event.title"
+                          (keyup)="refresh.next()"
+                        />
+                        </pre>
+                      </div>
+                      <div style="float: left;margin-right: 4rem;">
+                        <strong>Start Time: </strong>
+                        <!-- <pre> -->
+                        <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="modalData?.event.start"
+                          (ngModelChange)="refresh.next()" [altInput]="true" [convertModelValue]="true" [enableTime]="true"
+                          position='above' dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
+                        <!-- </pre> -->
+                      </div>
+                      <div style="float :left;">
+                        <strong>End Time: </strong>
+                        <!-- <pre> -->
+                        <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="modalData?.event.end"
+                          (ngModelChange)="refresh.next()" [altInput]="true" [convertModelValue]="true" [enableTime]="true"
+                          dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
+                        <!-- </pre> -->
+                      </div>
+                      <br>
+                      <br>
+                      <!-- <div>
+                        Action:
+                        <pre>{{ modalData?.action}}</pre>
+                      </div> -->
+                      <div>
+                        Location:
+                        <div>
+                          <mat-form-field >
+                            <mat-label>{{modalData?.event.location}}</mat-label>
+                            <mat-select name = 'location' [(ngModel)]="modalData?.event.location">
+                                <mat-option *ngFor="let location of meetingLocationList" [value]="location">
+                                  {{location}}
+                                </mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                        
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-outline-warning" (click)="updateCalendar();close()">
+                        Cancel
+                      </button> 
+                      <button type="button" class="btn btn-outline-danger" (click)="saveEvent(modalData?.event);close()">
+                        Update
+                      </button>
+                    </div>
+                  </div>
+
+
+                  <div *ngIf=" modalData?.action === 'Deleted' ">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Meeting Details</h5>
+                      <button type="button" class="close" (click)="updateCalendar();close()">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div>
+                        Delete the Meeting Event ?
+                      </div>
+                      <div>
+                        Purpose:
+                        <pre>{{ modalData?.event.title }}</pre>
+                      </div>
+                      <div>
+                        Meeting starts at:
+                        <pre>{{ modalData?.event.start | date : 'medium'}}</pre>
+                      </div>
+                      <div>
+                        Created By:
+                        <pre>{{ modalData?.event.adminName}}</pre>
+                      </div>
+            
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-info" (click)="updateCalendar();close()">
+                        Cancel
+                      </button>
+                      <button type="button" class="btn btn-danger" (click)="deleteEvent(modalData?.event);close()">
+                        Delete Meeting
+                      </button>
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+        </div>
+    </div>
+  </div>

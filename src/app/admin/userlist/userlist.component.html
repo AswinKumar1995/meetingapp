@@ -1,0 +1,54 @@
+<app-navbar></app-navbar>
+<div class="container">
+    <div class="row" *ngIf="!adminFlag">
+        <div class="col-md-8">
+            <h1 style="font-family: Georgia, 'Times New Roman', Times, serif;">
+                Access Denied for Creating Meeting.
+                Only Admin is allowed to create Meeting.
+            </h1>
+        </div>
+    </div>
+    <div class="row" *ngIf="adminFlag">
+        <div class="col-md-8">
+            <h1 style="font-family: Georgia, 'Times New Roman', Times, serif;">
+                Admin
+                <mat-accordion>
+                <mat-expansion-panel *ngFor="let user of allUsers; let index=index">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title >
+                        <mat-list-item class="list-item">
+                          <!-- <mat-checkbox color="primary" type="checkbox" [name]="'item'+index" > -->
+                            <span >{{user.firstName}} {{user.lastName}}</span>
+                          <!-- </mat-checkbox> -->
+                        </mat-list-item>
+                      </mat-panel-title>
+                      <mat-panel-description>
+                        <span>
+                            <button  mat-raised-button color="primary" matTooltip="View Schedule" (click)="routeToMeetingPage(user)">
+                              View
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                        </span>
+                      </mat-panel-description>
+    
+                    </mat-expansion-panel-header>
+                    <!-- start it here -->
+                    <!-- <div class="container">
+                      <span>
+                        <button mat-mini-fab (click)="removeSubTask(todo)" color="primary" matTooltip="Delete Task">
+                          <mat-icon>delete_forever</mat-icon>
+                        </button>
+    
+                        <button mat-mini-fab (click)="todoDialog(todo)" color="primary" [disabled]="todo.status"
+                          matTooltip="Edit Task">
+                          <mat-icon>mode_edit</mat-icon>
+                        </button>
+                      </span>
+                    </div> -->
+                    Location : {{user.location}}
+                  </mat-expansion-panel>
+                </mat-accordion>
+            </h1>
+        </div>
+    </div>
+</div>

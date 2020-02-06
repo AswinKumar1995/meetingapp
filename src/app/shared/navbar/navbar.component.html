@@ -1,0 +1,26 @@
+<mat-toolbar fxFlex color="primary">
+    <mat-toolbar-row>
+      <!--  <span>HOME</span> -->
+
+       <span><a mat-button routerLink = "/home" routerLinkActive="mat-raised-button" id= "home" mat-button  >My Meetings</a></span>
+
+      <!-- <mat-list>
+          <button  (click)="changeBadge()" mat-button [matMenuTriggerFor]="menu" [matBadge]= "matBadge" [matBadgeHidden] ="matBadge === 0" matBadgePosition="after" matBadgeColor="warn" >Notifications</button>
+          <mat-menu #menu="matMenu" >
+            <button (click)="goToPage(notify.ticketId)" mat-menu-item *ngFor="let notify of allNotifications" >
+              <h6>{{notify.notification}} with Ticket Id {{notify.ticketId}}</h6></button>
+            
+          </mat-menu>
+      </mat-list> -->
+
+
+     <span class="example-fill-remaining-space"><a  mat-button routerLink="/users" routerLinkActive="mat-raised-button">Create Meeting</a></span>
+     <button mat-button [matMenuTriggerFor]="menu"><mat-icon>account_circle</mat-icon>{{username}}</button>
+     <mat-menu #menu="matMenu" >
+       <button mat-menu-item routerLink="/login" (click)="logout()" >Logout</button>
+     </mat-menu>
+      <!-- <span >
+       <a mat-button routerLink="/login" (click)="logout()" >Logout</a>
+      </span> -->
+    </mat-toolbar-row>
+</mat-toolbar>

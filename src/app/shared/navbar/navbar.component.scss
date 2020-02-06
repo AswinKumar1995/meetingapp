@@ -1,0 +1,24 @@
+.header{
+    background-color: #04192E;
+    display:block;
+    padding: 3%;
+    color: white;
+    font-size: 26px;
+}
+
+
+#bs-example-navbar-collapse-1 > li:last-child
+{
+    float: right;
+}
+
+::ng-deep .mat-list {
+    margin-right: 2rem;
+}
+
+.example-fill-remaining-space {
+
+    flex: 1 1 auto;
+  }
+
+ 
